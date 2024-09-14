@@ -1,0 +1,10 @@
+pydantic<2.0.0
+fastapi
+sqlalchemy
+asyncpg
+passlib[bcrypt]
+python-dotenv
+fastapi-jwt-auth
+uvicorn
+fastapi
+redis

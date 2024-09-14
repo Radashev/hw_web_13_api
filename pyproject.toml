@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "hw-web-13-api"
+version = "0.1.0"
+description = ""
+authors = ["Vasyl Radashev <vasiliyradashev24@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi-jwt-auth = "^0.5.0"
+uvicorn = {extras = ["standard"], version = "^0.30.6"}
+fastapi = "^0.113.0"
+pydantic = "1.*"
+passlib = "^1.7.4"
+sqlalchemy = "^2.0.34"
+python-multipart = "^0.0.9"
+psycopg2-binary = "^2.9.9"
+slowapi = "^0.1.9"
+python-dotenv = "^1.0.1"
+asyncpg = "^0.29.0"
+
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
