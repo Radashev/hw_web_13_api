@@ -34,8 +34,11 @@ class ContactBase(BaseModel):
         return values
 
 
-class ContactCreate(ContactBase):
-    pass
+class ContactCreate(BaseModel):
+    name: str
+    last_name: str
+    email: str
+    phone: str
 
 
 class ContactUpdate(BaseModel):

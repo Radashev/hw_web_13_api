@@ -1,59 +1,48 @@
-# from sqlalchemy import create_engine
-# from sqlalchemy.orm import declarative_base, sessionmaker
-# from typing import Generator
-# import os
-#
-# # URL підключення до бази даних
-# DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:567234@localhost:5438/postgres")
-#
-# # Створення двигуна для підключення до бази даних
-# engine = create_engine(DATABASE_URL, echo=True)
-#
-# # Створення локального сеансу для роботи з базою даних
-# SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-#
-# # Базовий клас для оголошення моделей
-# Base = declarative_base()
-#
-# # Dependency для отримання сеансу бази даних
-# def get_db() -> Generator[SessionLocal, None, None]:
-#     db = SessionLocal()
-#     try:
-#         yield db
-#     finally:
-#         db.close()
-
+from typing import AsyncGenerator, Generator
 
 import os
+from pathlib import Path
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
-from typing import Generator
-
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
+from pydantic import BaseSettings
+
+# # Завантаження змінних середовища з файлу .env
+# load_dotenv()
 
 # Завантаження змінних середовища з файлу .env
-load_dotenv()
+env_path = Path('.') / '.env'
+load_dotenv(dotenv_path=env_path)
 
-# URL підключення до бази даних
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://postgres:567234@localhost:5438/postgres")
-# DATABASE_URL = "postgresql+asyncpg://user:password@localhost/dbname"
+# Перевірка змінних середовища
+database_url = os.getenv("DATABASE_URL")
+secret_key = os.getenv("JWT_SECRET_KEY")
 
-# Створення двигуна для підключення до бази даних
-engine = create_async_engine(DATABASE_URL, echo=True)
+print(f"DATABASE_URL: {database_url}")
+print(f"SECRET_KEY: {secret_key}")
 
-# Створення локального сеансу для роботи з базою даних
-# SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+class Settings(BaseSettings):
+    DATABASE_URL: str
+
+    class Config:
+        env_file = ".env"
+        env_file_encoding = 'utf-8'
+
+
+settings = Settings()
+
+# Створення асинхронного двигуна для підключення до бази даних
+engine = create_async_engine(settings.DATABASE_URL, echo=True)
+
+# Створення асинхронного сеансу для роботи з базою даних
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
+
 # Базовий клас для оголошення моделей
 Base = declarative_base()
 
 
-# Dependency для отримання сеансу бази даних
-def get_db() -> Generator[SessionLocal, None, None]:
-    db = SessionLocal()
-    try:
+# Dependency для отримання асинхронного сеансу бази даних
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    async with SessionLocal() as db:
         yield db
-    finally:
-        db.close()
